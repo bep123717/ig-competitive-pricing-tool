@@ -1,0 +1,174 @@
+:root {
+  --us: #2563eb;
+  --rival: #94a3b8;
+  --good: #16a34a;
+  --bad: #dc2626;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --line: #e2e8f0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background: #f8fafc;
+}
+
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.status {
+  padding: 80px 24px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.page-title {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.verdict {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.verdict h1 {
+  font-size: 2rem;
+  margin: 0 0 8px;
+}
+
+.verdict .above {
+  color: var(--bad);
+}
+
+.verdict .below {
+  color: var(--good);
+}
+
+.verdict .at {
+  color: var(--us);
+}
+
+.verdict p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.verdict .promo-note {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.verdict .caveat {
+  font-size: 0.8rem;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.chart {
+  margin-bottom: 48px;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.bar-label {
+  width: 130px;
+  text-align: right;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.bar-label em {
+  color: var(--us);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.bar-track {
+  flex: 1;
+}
+
+.bar {
+  background: var(--rival);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.bar-us {
+  background: var(--us);
+}
+
+.sale-badge {
+  background: var(--bad);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-left: 8px;
+  font-size: 0.7rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin-bottom: 32px;
+}
+
+th {
+  text-align: left;
+  color: var(--muted);
+  font-weight: 600;
+  border-bottom: 2px solid var(--line);
+  padding: 8px 12px;
+}
+
+td {
+  border-bottom: 1px solid var(--line);
+  padding: 10px 12px;
+}
+
+.row-us {
+  background: #eff6ff;
+}
+
+td a {
+  color: var(--us);
+}
+
+.data-warning {
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+}
+
+footer {
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
