@@ -19,7 +19,7 @@ MVP for tracking competitor t-shirt pricing against Mott & Bow prices. Scrapes s
 
 ## Running
 
-Requires Node ≥ 18 (native fetch).
+Requires Node ≥ 20 (scraper needs native fetch; Vite requires 20.19+).
 
     npm install
     npm run scrape      # writes data.json locally (no AWS needed)
