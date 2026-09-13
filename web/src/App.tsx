@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Product, Snapshot } from '../../shared/types';
+import { describeDelta, listPrice, median, onSale, price } from './pricing';
 import './App.css';
 
 const DATA_URL = 'https://ig-bpollard-take-home.intelligems.io/data.json';
@@ -7,37 +8,6 @@ const US = 'mott-and-bow';
 
 const dollars = (cents: number) =>
   (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-
-function price(product: Product): number {
-  const inStock = product.variants.filter((v) => v.available);
-  const pool = inStock.length > 0 ? inStock : product.variants;
-  return Math.min(...pool.map((v) => v.unitPrice));
-}
-
-function listPrice(product: Product): number {
-  const inStock = product.variants.filter((v) => v.available);
-  const pool = inStock.length > 0 ? inStock : product.variants;
-  return Math.min(...pool.map((v) => v.compareAtPrice ?? v.unitPrice));
-}
-
-function onSale(product: Product): boolean {
-  return product.variants.some((v) => v.compareAtPrice !== null);
-}
-
-function describeDelta(deltaPct: number): { label: string; tone: string } {
-  const rounded = Math.abs(deltaPct).toFixed(1);
-  if (rounded === '0.0') return { label: 'at', tone: 'at' };
-  return {
-    label: `${rounded}% ${deltaPct > 0 ? 'above' : 'below'}`,
-    tone: deltaPct > 0 ? 'above' : 'below',
-  };
-}
-
-function median(values: number[]): number {
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-}
 
 function Verdict({ snapshot }: { snapshot: Snapshot }) {
   const us = snapshot.products.find((p) => p.competitor === US);

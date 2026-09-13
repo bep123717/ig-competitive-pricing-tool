@@ -1,6 +1,6 @@
 import { CompetitorId, COMPETITORS, Product, Variant } from '../shared/types.js';
 
-type ShopifyVariant = {
+export type ShopifyVariant = {
   price: number;
   compare_at_price: number | null;
   available: boolean;
@@ -9,7 +9,7 @@ type ShopifyVariant = {
   option3: string | null;
 };
 
-type ShopifyProduct = {
+export type ShopifyProduct = {
   title: string;
   options: { name: string; values: string[] }[];
   variants: ShopifyVariant[];
@@ -22,7 +22,7 @@ export type ShopifySource = {
   color?: string;
 };
 
-function optionValue(
+export function optionValue(
   product: ShopifyProduct,
   variant: ShopifyVariant,
   name: string,
@@ -34,7 +34,7 @@ function optionValue(
   return [variant.option1, variant.option2, variant.option3][index];
 }
 
-function saleCompareAt(variant: ShopifyVariant): number | null {
+export function saleCompareAt(variant: ShopifyVariant): number | null {
   const { compare_at_price, price } = variant;
   if (compare_at_price === null || compare_at_price <= price) return null;
   return compare_at_price;
