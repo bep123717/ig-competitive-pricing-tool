@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+.DS_Store
+
+# Pairing session notes — not for submission
+NOTES.md
+data.json
+.sisyphus/
