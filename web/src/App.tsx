@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Product, Snapshot } from '../../shared/types';
-import { describeDelta, listPrice, median, onSale, price } from './pricing';
+import { SnapshotSchema } from '../../shared/types';
+import { anyPromoActive, describeDelta, displayVariant, listPrice, median, onSale, price } from './pricing';
 import './App.css';
 
 const DATA_URL = 'https://ig-bpollard-take-home.intelligems.io/data.json';
@@ -19,7 +20,7 @@ function Verdict({ snapshot }: { snapshot: Snapshot }) {
   const listMedian = median(rivals.map(listPrice));
   const currentDeltaPct = ((ourPrice - currentMedian) / currentMedian) * 100;
   const listDeltaPct = ((ourPrice - listMedian) / listMedian) * 100;
-  const promosMoveMarket = Math.abs(currentDeltaPct - listDeltaPct) >= 0.5;
+  const showPromoNote = anyPromoActive(rivals);
   const current = describeDelta(currentDeltaPct);
   const list = describeDelta(listDeltaPct);
 
@@ -33,9 +34,9 @@ function Verdict({ snapshot }: { snapshot: Snapshot }) {
         {us.productName} at {dollars(ourPrice)} vs. median {dollars(currentMedian)} across{' '}
         {rivals.length} competitors
       </p>
-      {promosMoveMarket && (
+      {showPromoNote && (
         <p className="promo-note">
-          Excluding active promos, Mott & Bow is {list.label} the list-price median (
+          Competitor promos active — vs. list prices, Mott & Bow is {list.label} the median (
           {dollars(listMedian)})
         </p>
       )}
@@ -85,7 +86,7 @@ function DetailTable({ products }: { products: Product[] }) {
       </thead>
       <tbody>
         {products.map((p) => {
-          const compareAt = p.variants.find((v) => v.compareAtPrice !== null)?.compareAtPrice;
+          const compareAt = displayVariant(p).compareAtPrice;
           const inStock = p.variants.filter((v) => v.available);
           return (
             <tr key={p.competitor} className={p.competitor === US ? 'row-us' : ''}>
@@ -96,7 +97,7 @@ function DetailTable({ products }: { products: Product[] }) {
                 </a>
               </td>
               <td>{dollars(price(p))}</td>
-              <td>{compareAt ? dollars(compareAt) : '—'}</td>
+              <td>{compareAt !== null ? dollars(compareAt) : '—'}</td>
               <td>
                 {inStock.length}/{p.variants.length} ({inStock.map((v) => v.size).join(', ')})
               </td>
@@ -115,7 +116,13 @@ export default function App() {
   useEffect(() => {
     fetch(DATA_URL)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then(setSnapshot)
+      .then((json) => {
+        const result = SnapshotSchema.safeParse(json);
+        if (!result.success) {
+          throw new Error(`Unexpected data shape: ${result.error.issues[0]?.message}`);
+        }
+        setSnapshot(result.data);
+      })
       .catch((e: Error) => setError(e.message));
   }, []);
 

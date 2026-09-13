@@ -1,9 +1,13 @@
-import type { Product } from '../../shared/types.js';
+import type { Product, Variant } from '../../shared/types.js';
 
-export function price(product: Product): number {
+export function displayVariant(product: Product): Variant {
   const inStock = product.variants.filter((v) => v.available);
   const pool = inStock.length > 0 ? inStock : product.variants;
-  return Math.min(...pool.map((v) => v.unitPrice));
+  return pool.reduce((min, v) => (v.unitPrice < min.unitPrice ? v : min));
+}
+
+export function price(product: Product): number {
+  return displayVariant(product).unitPrice;
 }
 
 export function listPrice(product: Product): number {
@@ -13,7 +17,7 @@ export function listPrice(product: Product): number {
 }
 
 export function onSale(product: Product): boolean {
-  return product.variants.some((v) => v.compareAtPrice !== null);
+  return displayVariant(product).compareAtPrice !== null;
 }
 
 export function median(values: number[]): number {
@@ -29,4 +33,8 @@ export function describeDelta(deltaPct: number): { label: string; tone: string }
     label: `${rounded}% ${deltaPct > 0 ? 'above' : 'below'}`,
     tone: deltaPct > 0 ? 'above' : 'below',
   };
+}
+
+export function anyPromoActive(products: Product[]): boolean {
+  return products.some((p) => p.variants.some((v) => v.compareAtPrice !== null));
 }

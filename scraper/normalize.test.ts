@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import type { Product } from '../shared/types.js';
 import { optionValue, saleCompareAt, ShopifyProduct, ShopifyVariant } from './shopify.js';
-import { describeDelta, listPrice, median, price } from '../web/src/pricing.js';
+import { describeDelta, displayVariant, listPrice, median, onSale, price } from '../web/src/pricing.js';
 
 const variant = (over: Partial<ShopifyVariant>): ShopifyVariant => ({
   price: 3499,
@@ -106,4 +106,19 @@ test('price: falls back to all variants when nothing in stock', () => {
 test('listPrice: uses compareAtPrice when on sale, unitPrice otherwise', () => {
   assert.equal(listPrice(product([pv(2800, true, 3500)])), 3500);
   assert.equal(listPrice(product([pv(3499, true)])), 3499);
+});
+
+test('displayVariant: price and compareAt come from the SAME variant', () => {
+  const cheapNoSale = pv(3499, true);
+  const pricierOnSale = pv(4199, true, 4999);
+  const chosen = displayVariant(product([pricierOnSale, cheapNoSale]));
+  assert.equal(chosen.unitPrice, 3499);
+  assert.equal(chosen.compareAtPrice, null);
+});
+
+test('onSale: reflects the displayed variant, not just any variant', () => {
+  const cheapNoSale = pv(3499, true);
+  const pricierOnSale = pv(4199, true, 4999);
+  assert.equal(onSale(product([pricierOnSale, cheapNoSale])), false);
+  assert.equal(onSale(product([pv(2800, true, 3500)])), true);
 });
