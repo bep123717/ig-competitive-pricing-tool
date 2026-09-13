@@ -9,8 +9,10 @@ MVP for tracking competitor t-shirt pricing against Mott & Bow prices. Scrapes s
 ## Architecture
 
 - `scraper/` — 4 adapters + concurrent runner; collects competitor pricing data with validation, writes JSON to S3
-- `shared/types.ts` — Single source of truth schema and types- shared by scraper and web app
+- `shared/types.ts` — Single source of truth schema and types — shared by scraper and web app
 - `web/` — Vite & React dashboard, reads data.json from the CDN
+
+### Design
 
 - **One adapter per competitor** with a shared interface. Shopify stores share one fetch/normalize helper, non-Shopify has bespoke adapter. Adapter validation and output designed to return any errors without blocking successful data fetches.
 - **Snapshots** are written to `snapshots/<timestamp>.json` to allow for future price-history features.
@@ -25,13 +27,15 @@ Requires Node ≥ 18 (native fetch).
     npm run upload      # pushes data.json + snapshot to S3 (AWS creds required)
     cd web && npm install && npm run dev   # dashboard against live CDN data
 
+Note: Adidas' WAF blocks curl (TLS fingerprinting) but allows Node's fetch — verify the Adidas source via `npm run scrape`, not curl.
+
 ## Notable findings & decisions
-- Vite for frontend. Deliverable is static files on S3 — Vite is the zero-config standard for building React SPA to static output. 
-- Provided API token for No Bull returned UNAUTHORIZED; decision: fell back to the stores public product endpoint to collect data
+- Vite for frontend. Deliverable is static files on S3 — Vite is the zero-config standard for building React SPA to static output.
+- Provided API token for No Bull returned UNAUTHORIZED (verified across 6 API versions, both domains, both header conventions); decision: fell back to the store's public product endpoint to collect data
 - Differences in data models
-  - Sale is represented differently for some stores- True Classic returns `compare_at_price == price` when not on sale; others return null/empty; decision: the normalizer treats compare-at ≤ price as "not on sale"
-  - Color is represented differently some stores- True Classic shows color in product title; decision: color is config-declared per source
-  - Prices returned differently for some stores- Adidas prices in dollars, others in cents; decision: schema stores all money in cents, adapters own the conversion
+  - Sale is represented differently for some stores — True Classic returns `compare_at_price == price` when not on sale; others return null/empty; decision: the normalizer treats compare-at ≤ price as "not on sale"
+  - Color is represented differently for some stores — True Classic shows color in product title; decision: color is config-declared per source
+  - Prices returned differently for some stores — Adidas prices in dollars, others in cents; decision: schema stores all money as integer cents in `unitPrice` fields (per the spec's naming requirement), adapters own the conversion
 - Frontend Hero metric shows median, with the goal of demonstrating market rather than outliers. Promo-adjusted comparison renders only when promos materially move the median.
 
 ## Deliberately cut (6 hour scope)
