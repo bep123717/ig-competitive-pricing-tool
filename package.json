@@ -6,7 +6,7 @@
   "scripts": {
     "scrape": "tsx scraper/run.ts",
     "upload": "tsx scraper/upload.ts",
-    "test": "tsx --test scraper/normalize.test.ts",
+    "test": "tsx --test scraper/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "engines": {
