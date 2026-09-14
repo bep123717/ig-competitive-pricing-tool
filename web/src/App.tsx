@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Product, Snapshot } from '../../shared/types';
 import { SnapshotSchema } from '../../shared/types';
-import { anyPromoActive, describeDelta, displayVariant, listPrice, median, onSale, price } from './pricing';
+import { describeDelta, displayVariant, median, onSale, price } from './pricing';
 import './App.css';
 
 const DATA_URL = 'https://ig-bpollard-take-home.intelligems.io/data.json';
@@ -17,12 +17,7 @@ function Verdict({ snapshot }: { snapshot: Snapshot }) {
 
   const ourPrice = price(us);
   const currentMedian = median(rivals.map(price));
-  const listMedian = median(rivals.map(listPrice));
-  const currentDeltaPct = ((ourPrice - currentMedian) / currentMedian) * 100;
-  const listDeltaPct = ((ourPrice - listMedian) / listMedian) * 100;
-  const showPromoNote = anyPromoActive(rivals);
-  const current = describeDelta(currentDeltaPct);
-  const list = describeDelta(listDeltaPct);
+  const current = describeDelta(((ourPrice - currentMedian) / currentMedian) * 100);
 
   return (
     <section className="verdict">
@@ -34,13 +29,7 @@ function Verdict({ snapshot }: { snapshot: Snapshot }) {
         {us.productName} at {dollars(ourPrice)} vs. median {dollars(currentMedian)} across{' '}
         {rivals.length} competitors
       </p>
-      {showPromoNote && (
-        <p className="promo-note">
-          Competitor promos active — vs. list prices, Mott & Bow is {list.label} the median (
-          {dollars(listMedian)})
-        </p>
-      )}
-      <p className="caveat">Based on each competitor's closest white crew-neck tee</p>
+      <p className="caveat">Based on nearest comparable product from each competitor</p>
     </section>
   );
 }
@@ -131,7 +120,7 @@ export default function App() {
 
   return (
     <main>
-      <header className="page-title">Mott &amp; Bow Competitive Pricing Monitor</header>
+      <header className="page-title">Mott &amp; Bow Competitive Pricing Monitor — CEO Dashboard</header>
       <Verdict snapshot={snapshot} />
       <PriceChart products={snapshot.products} />
       <DetailTable products={snapshot.products} />
@@ -140,10 +129,7 @@ export default function App() {
           Data unavailable for: {snapshot.errors.map((e) => e.competitor).join(', ')}
         </p>
       )}
-      <footer>
-        Men's white crew-neck tee · lowest in-stock price per competitor · fetched{' '}
-        {new Date(snapshot.fetchedAt).toLocaleString()}
-      </footer>
+      <footer>Data as of {new Date(snapshot.fetchedAt).toLocaleString()}</footer>
     </main>
   );
 }
