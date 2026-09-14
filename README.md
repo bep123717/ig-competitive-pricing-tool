@@ -36,10 +36,11 @@ Note: Adidas' WAF blocks curl (TLS fingerprinting) but allows Node's fetch — v
   - Sale is represented differently for some stores — True Classic returns `compare_at_price == price` when not on sale; others return null/empty; decision: the normalizer treats compare-at ≤ price as "not on sale"
   - Color is represented differently for some stores — True Classic shows color in product title; decision: color is config-declared per source
   - Prices returned differently for some stores — Adidas prices in dollars, others in cents; decision: schema stores all money as integer cents in `unitPrice` fields (per the spec's naming requirement), adapters own the conversion
-- Frontend Hero metric shows median, with the goal of demonstrating market rather than outliers. Promo-adjusted comparison renders only when promos materially move the median.
+- Frontend Hero metric shows median, with the goal of demonstrating market rather than outliers.
 
 ## Deliberately cut (6 hour scope)
 - Price history UI. Snapshots accumulating, price history UI would be natural next feature.
 - Product matching. This project compares one tee per competitor. Building system for categorizing and matching many comparable products out of scope for this project.
+- Promo-adjusted comparison: with three competitors, sale prices did not change the median materially. With a larger data set, promotion comparisons become meaningful and are worth displaying.
 - Scheduling. Scraping runs are manual, could be scheduled via EventBridge or Actions cron job.
 - AWS lifecycle optimizations. Cleanup of old snapshots, stale FE assets.
